@@ -34,40 +34,79 @@ s.semester = 'Spring' and s.year = 2010;
 
 4° Questão:
 
-SELECT 
-    t.ID, 
-    t.course_id, 
-    t.sec_id, 
-    t.semester, 
-    t.year, 
-    (c.credits * gp.points) AS total_course_points
-FROM 
-    takes t
-JOIN 
-    course c ON t.course_id = c.course_id
-JOIN 
-    grade_points gp ON t.grade = gp.grade;
+SELECT
+	s.ID,
+	s.name,
+	c.title,
+	c.dept_name,
+	t.grade,
+	CASE
+		WHEN t.grade = 'A+' THEN 4
+		WHEN t.grade = 'A' THEN 3.7
+		WHEN t.grade = 'A-' THEN 3.4
+		WHEN t.grade = 'B+' THEN 3.1
+		WHEN t.grade = 'B' THEN 2.8
+		WHEN t.grade = 'B-' THEN 2.5
+		WHEN t.grade = 'C+' THEN 2.2
+		WHEN t.grade = 'C' THEN 1.9
+		WHEN t.grade = 'C-' THEN 1.6
+	END AS points,
+	c.credits,
+	(CASE
+		WHEN t.grade = 'A+' THEN 4
+		WHEN t.grade = 'A' THEN 3.7
+		WHEN t.grade = 'A-' THEN 3.4
+		WHEN t.grade = 'B+' THEN 3.1
+		WHEN t.grade = 'B' THEN 2.8
+		WHEN t.grade = 'B-' THEN 2.5
+		WHEN t.grade = 'C+' THEN 2.2
+		WHEN t.grade = 'C' THEN 1.9
+		WHEN t.grade = 'C-' THEN 1.6
+	END) * c.credits AS 'Pontos totais'
+FROM
+	takes t
+JOIN
+	student s ON t.ID = s.ID
+JOIN
+	course c ON t.course_id = c.course_id;
 
 5° Questão:
 
-CREATE VIEW coeficiente_rendimento AS
-SELECT 
-    t.ID, 
-    s.name,
-    SUM(c.credits * gp.points) AS total_points,
-    SUM(c.credits) AS total_credits_attempted,
-    -- Opcional: Cálculo da média (CR)
-    CASE 
-        WHEN SUM(c.credits) > 0 THEN SUM(c.credits * gp.points) / SUM(c.credits)
-        ELSE 0 
-    END AS gpa
-FROM 
-    takes t
-JOIN 
-    student s ON t.ID = s.ID
-JOIN 
-    course c ON t.course_id = c.course_id
-JOIN 
-    grade_points gp ON t.grade = gp.grade
-GROUP BY 
-    t.ID, s.name;
+CREATE VIEW 
+	coeficiente_rendimento 
+AS
+(SELECT
+	s.ID,
+	s.name,
+	c.title,
+	c.dept_name,
+	t.grade,
+	CASE
+		WHEN t.grade = 'A+' THEN 4
+		WHEN t.grade = 'A' THEN 3.7
+		WHEN t.grade = 'A-' THEN 3.4
+		WHEN t.grade = 'B+' THEN 3.1
+		WHEN t.grade = 'B' THEN 2.8
+		WHEN t.grade = 'B-' THEN 2.5
+		WHEN t.grade = 'C+' THEN 2.2
+		WHEN t.grade = 'C' THEN 1.9
+		WHEN t.grade = 'C-' THEN 1.6
+	END AS points,
+	c.credits,
+	(CASE
+		WHEN t.grade = 'A+' THEN 4
+		WHEN t.grade = 'A' THEN 3.7
+		WHEN t.grade = 'A-' THEN 3.4
+		WHEN t.grade = 'B+' THEN 3.1
+		WHEN t.grade = 'B' THEN 2.8
+		WHEN t.grade = 'B-' THEN 2.5
+		WHEN t.grade = 'C+' THEN 2.2
+		WHEN t.grade = 'C' THEN 1.9
+		WHEN t.grade = 'C-' THEN 1.6
+	END) * c.credits AS 'Pontos totais'
+FROM
+	takes t
+JOIN
+	student s ON t.ID = s.ID
+JOIN
+	course c ON t.course_id = c.course_id);
